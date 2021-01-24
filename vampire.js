@@ -6,70 +6,87 @@ class Vampire {
     this.creator = null;
   }
 
-  /** Simple tree methods **/
-
   // Adds the vampire as an offspring of this vampire
-  //works tests passed
   addOffspring(vampire) {
     this.offspring.push(vampire);
     vampire.creator = this;
+
   }
 
   // Returns the total number of vampires created by that vampire
-  //works passing tests
   get numberOfOffspring() {
-    return this.offspring.length; //
+    return this.offspring.length;
   }
 
-  //Returns the number of vampires away from the original vampire this vampire is
-  //works test passed
-  get numberOfVampiresFromOriginal() { //
-    let numberOfVampires = 0;
-    let currentVampire = this;
-  
-    // climb "up" the tree (using iteration), counting nodes, until no parent is found
-    while (currentVampire.creator) {
-      currentVampire = currentVampire.creator;
-      numberOfVampires++;
+  // Returns the number of vampires away from the original vampire this vampire is
+  get numberOfVampiresFromOriginal() {
+    let count = 0;
+    let current = this;
+    while (current.creator) {
+      current = current.creator;
+      count++;
     }
-    return numberOfVampires;
+    return count;
   }
 
   // Returns true if this vampire is more senior than the other vampire. (Who is closer to the original vampire)
-  // Works tests passed
   isMoreSeniorThan(vampire) {
-    let numberOfVampires = 0;
-    let currentVampire = this;
-    let paramVamp = 0;
-    // climb "up" the tree (using iteration), counting nodes, until no parent is found
-    while (currentVampire.creator) {
-      currentVampire = currentVampire.creator;
-      numberOfVampires++;
-    }
-    // below is while loop to check paramater vampire against THIS Vampire
-    while (vampire.creator) {
-      vampire = vampire.creator;
-      paramVamp++;
-    }
-    if (numberOfVampires < paramVamp) {
-      return true; //if THIS vampire is more senior
-    } else {
-      return false; //if THIS vampire is less senior than the paramater
-    }
+    return (this.numberOfVampiresFromOriginal < vampire.numberOfVampiresFromOriginal) ? true : false;
   }
-}
+
   /** Stretch **/
 
-  // Returns the closest common ancestor of two vampires.
-  // The closest common anscestor should be the more senior vampire if a direct ancestor is used.
-  // For example:
-  // * when comparing Ansel and Sarah, Ansel is the closest common anscestor.
-  // * when comparing Ansel and Andrew, Ansel is the closest common anscestor.
-
-  //Start below
   // closestCommonAncestor(vampire) {
-
+ 
+  //   }
   // }
+
+
+  // Returns the vampire object with that name, or null if no vampire exists with that name
+
+  vampireWithName(name) {
+    if (name === this.name) {
+      return this;
+    }
+    if (this.offspring) {
+      for (let vamp of this.offspring) {
+        let search = vamp.vampireWithName(name);
+        if (search) {
+          return search;
+        }
+      }
+    }
+    return null;
+  }
+
+
+  // Returns the total number of vampires that exist
+  get totalDescendents() {
+    let cur = this;
+    let count = cur.offspring.length;
+    if (cur.offspring) {
+      for (const child of cur.offspring) {
+        cur = child;
+        count += child.totalDescendents;
+      }
+    }
+    return count;
+  }
+
+  // Returns an array of all the vampires that were converted after 1980
+  get allMillennialVampires() {
+
+    let vampires = [];
+    if (this.yearConverted > 1980) vampires.push(this);
+    for (const offspring of this.offspring) {
+      const millenials = offspring.allMillennialVampires;
+      vampires = vampires.concat(millenials);
+    }
+    return vampires;
+  }
+}
+
+module.exports = Vampire;
 
 
 // const dracula = new Vampire('Dracula', 1500); //root
@@ -86,7 +103,6 @@ class Vampire {
 // elgort.addOffspring(andrew);
 
 
-// console.log(ansel.numberOfOffspring);
 
 
 
